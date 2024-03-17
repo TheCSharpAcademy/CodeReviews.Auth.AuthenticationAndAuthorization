@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Movies.StevieTV.Data.Movies;
+using Movies.StevieTV.Areas.Identity.Data;
 
 #nullable disable
 

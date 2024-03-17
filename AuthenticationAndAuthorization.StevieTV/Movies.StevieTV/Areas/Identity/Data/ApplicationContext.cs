@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Movies.StevieTV.Data.Movies;
+namespace Movies.StevieTV.Areas.Identity.Data;
 
 public class ApplicationContext : IdentityDbContext<IdentityUser>
 {

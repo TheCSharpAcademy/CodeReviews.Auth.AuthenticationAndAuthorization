@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Movies.StevieTV.Data;
 using Movies.StevieTV.Models;
 using Microsoft.AspNetCore.Identity;
-using Movies.StevieTV.Data.Movies;
+using Movies.StevieTV.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MoviesContext>(options =>
