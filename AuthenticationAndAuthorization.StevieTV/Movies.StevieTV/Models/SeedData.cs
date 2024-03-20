@@ -10,7 +10,7 @@ public static class SeedData
     {
         using var context = new MoviesContext(serviceProvider.GetRequiredService<DbContextOptions<MoviesContext>>());
 
-        context.Database.EnsureCreated();
+        context.Database.Migrate();
 
         if (!context.Movie.Any())
         {
@@ -56,7 +56,6 @@ public static class SeedData
         
         using var appContext = new ApplicationContext(serviceProvider.GetRequiredService<DbContextOptions<ApplicationContext>>());
 
-        appContext.Database.EnsureCreated();
         appContext.Database.Migrate();
         appContext.SaveChanges();
     }
