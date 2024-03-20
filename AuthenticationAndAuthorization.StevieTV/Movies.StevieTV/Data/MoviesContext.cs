@@ -11,5 +11,6 @@ namespace Movies.StevieTV.Data
         }
 
         public DbSet<Movie> Movie { get; set; } = default!;
+        public DbSet<ErrorLog> ErrorLog { get; set; }
     }
 }
