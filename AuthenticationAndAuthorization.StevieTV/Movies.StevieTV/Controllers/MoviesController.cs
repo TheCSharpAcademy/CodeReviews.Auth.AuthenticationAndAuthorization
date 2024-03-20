@@ -10,10 +10,12 @@ namespace Movies.StevieTV.Controllers
     public class MoviesController : Controller
     {
         private readonly MoviesContext _context;
+        private readonly ILogger _logger;
 
-        public MoviesController(MoviesContext context)
+        public MoviesController(MoviesContext context, ILogger logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Movies
@@ -47,6 +49,7 @@ namespace Movies.StevieTV.Controllers
                 Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
                 Movies = await movies.ToListAsync()
             };
+            _logger.LogInformation("Movies Listed");
             
             return View(movieGenreVm);
         }
@@ -123,6 +126,7 @@ namespace Movies.StevieTV.Controllers
             {
                 return NotFound();
             }
+            _logger.LogInformation("Editing Movie {0}", id);
 
             if (ModelState.IsValid)
             {
