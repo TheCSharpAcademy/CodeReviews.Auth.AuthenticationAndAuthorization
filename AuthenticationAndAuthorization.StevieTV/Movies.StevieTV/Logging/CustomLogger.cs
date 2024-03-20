@@ -23,7 +23,7 @@ public class CustomLogger : ILogger
 
         var errorLog = new ErrorLog()
         {
-            Error = formatter(state, exception),
+            Error = $"{logLevel.ToString()}: {formatter(state, exception)}",
             Time = DateTime.Now
         };
 

@@ -24,6 +24,7 @@ namespace Movies.StevieTV.Controllers
         {
             if (_context.Movie == null)
             {
+                _logger.LogError("Entity set 'MoviesContext.Movie' is null");
                 return Problem("Entity set 'MoviesContext.Movie' is null");
             }
 
@@ -49,7 +50,6 @@ namespace Movies.StevieTV.Controllers
                 Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
                 Movies = await movies.ToListAsync()
             };
-            _logger.LogInformation("Movies Listed");
             
             return View(movieGenreVm);
         }
@@ -60,6 +60,7 @@ namespace Movies.StevieTV.Controllers
         {
             if (id == null)
             {
+                _logger.LogError($"Movie with id '{id}' not found when getting details");
                 return NotFound();
             }
 
@@ -90,6 +91,7 @@ namespace Movies.StevieTV.Controllers
         {
             if (ModelState.IsValid)
             {
+                _logger.LogInformation($"Adding new movie: {movie.Title}");
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,12 +105,14 @@ namespace Movies.StevieTV.Controllers
         {
             if (id == null)
             {
+                _logger.LogError($"No Movie id provided to edit");
                 return NotFound();
             }
 
             var movie = await _context.Movie.FindAsync(id);
             if (movie == null)
             {
+                _logger.LogError($"Movie with id '{id}' not found when editing");
                 return NotFound();
             }
             return View(movie);
@@ -124,14 +128,15 @@ namespace Movies.StevieTV.Controllers
         {
             if (id != movie.Id)
             {
+                _logger.LogError($"The Movie with {id} does not match the Movie '{movie.Title}' you are trying to edit");
                 return NotFound();
             }
-            _logger.LogInformation("Editing Movie {0}", id);
-
+            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    _logger.LogInformation($"Updating movie: {movie.Title}");
                     _context.Update(movie);
                     await _context.SaveChangesAsync();
                 }
@@ -139,6 +144,7 @@ namespace Movies.StevieTV.Controllers
                 {
                     if (!MovieExists(movie.Id))
                     {
+                        _logger.LogError($"Movie with id '{id}' not found when editing");
                         return NotFound();
                     }
                     else
@@ -157,6 +163,7 @@ namespace Movies.StevieTV.Controllers
         {
             if (id == null)
             {
+                _logger.LogError($"Movie with id '{id}' not found when deleting");
                 return NotFound();
             }
 
@@ -164,6 +171,7 @@ namespace Movies.StevieTV.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
+                _logger.LogError($"No movie Id provided when deleting");
                 return NotFound();
             }
 
@@ -179,6 +187,7 @@ namespace Movies.StevieTV.Controllers
             var movie = await _context.Movie.FindAsync(id);
             if (movie != null)
             {
+                _logger.LogInformation($"Movie with id '{id}' deleted");
                 _context.Movie.Remove(movie);
             }
 
