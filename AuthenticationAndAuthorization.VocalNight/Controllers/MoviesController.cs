@@ -90,7 +90,7 @@ namespace MovieMvc.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(movie);
-                _databaseLogging.LogTransactions("Sucess", $"Movie with id: {movie.Id} was created.");
+                _databaseLogging.LogTransactions("Sucess", $"Movie with name: {movie.Title} was created.");
                 await _context.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
