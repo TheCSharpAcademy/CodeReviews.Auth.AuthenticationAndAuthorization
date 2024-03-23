@@ -10,6 +10,7 @@ namespace MovieMvc.Data
         public MovieMvcContext (DbContextOptions<MovieMvcContext> options)
             : base(options)
         {
+
         }
 
         public DbSet<Movie> Movie { get; set; } = default!;

@@ -12,13 +12,11 @@ namespace MovieMvc.Controllers
     public class MoviesController : Controller
     {
         private readonly MovieMvcContext _context;
-        private readonly ILogger<MoviesController> _logger;
         private readonly LogRepository _databaseLogging;
 
-        public MoviesController(MovieMvcContext context, ILogger<MoviesController> logger, LogRepository logging )
+        public MoviesController(MovieMvcContext context, LogRepository logging )
         {
             _context = context;
-            _logger = logger;
             _databaseLogging = logging;
         }
 
@@ -27,7 +25,6 @@ namespace MovieMvc.Controllers
         {
             if (_context.Movie == null)
             {
-                _databaseLogging.Log("Error", "Entity set 'MvcMovieContext.Movie' is null.");
                 return Problem("Entity set 'MvcMovieContext.Movie' is null.");
             }
 
@@ -53,7 +50,7 @@ namespace MovieMvc.Controllers
                 Movies = await movies.ToListAsync()
             };
 
-            _logger.LogInformation("Movies page acessed without errors");
+            _databaseLogging.Log("Sucess", "Movies page acessed without errors");
             return View(movieGenreVM);
         }
 
@@ -62,6 +59,7 @@ namespace MovieMvc.Controllers
         {
             if (id == null)
             {
+                _databaseLogging.Log("Error", $"Movie with id: {id} not found");
                 return NotFound();
             }
 
@@ -69,6 +67,7 @@ namespace MovieMvc.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
+                _databaseLogging.Log("Error", $"Movie with id: {id} not found");
                 return NotFound();
             }
 
@@ -91,7 +90,9 @@ namespace MovieMvc.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(movie);
+                _databaseLogging.LogTransactions("Sucess", $"Movie with id: {movie.Id} was created.");
                 await _context.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
             return View(movie);
@@ -102,6 +103,7 @@ namespace MovieMvc.Controllers
         {
             if (id == null)
             {
+                _databaseLogging.Log("Error", $"Movie with id: {id} not found");
                 return NotFound();
             }
 
@@ -131,6 +133,7 @@ namespace MovieMvc.Controllers
                 try
                 {
                     _context.Update(movie);
+                    _databaseLogging.LogTransactions("Sucess", $"Movie with id: {id} was updated");
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -177,9 +180,10 @@ namespace MovieMvc.Controllers
             if (movie != null)
             {
                 _context.Movie.Remove(movie);
+                _databaseLogging.LogTransactions("Error", $"Movie with id: {id} was deleted");
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

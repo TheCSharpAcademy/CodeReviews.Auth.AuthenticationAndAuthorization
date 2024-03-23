@@ -12,10 +12,15 @@ namespace MovieMvc.Repositories
             _context = context;
         }
 
-        public void Log( string type, string message )
+        public async void Log( string type, string message )
         {
             _context.Logs.Add(new Logs { Category = type, Description = message, Date = new DateTime().Date});
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+        }
+
+        public async void LogTransactions( string type, string message )
+        {
+            _context.Logs.Add(new Logs { Category = type, Description = message, Date = new DateTime().Date });
         }
     }
 }
