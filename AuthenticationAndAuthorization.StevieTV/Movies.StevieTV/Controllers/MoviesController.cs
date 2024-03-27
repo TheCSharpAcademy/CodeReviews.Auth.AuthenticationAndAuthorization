@@ -68,6 +68,7 @@ namespace Movies.StevieTV.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
+                _logger.LogError($"Movie with id '{id}' not found when getting details");
                 return NotFound();
             }
 
@@ -163,7 +164,7 @@ namespace Movies.StevieTV.Controllers
         {
             if (id == null)
             {
-                _logger.LogError($"Movie with id '{id}' not found when deleting");
+                _logger.LogError($"No movie Id provided when deleting");
                 return NotFound();
             }
 
@@ -171,7 +172,7 @@ namespace Movies.StevieTV.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
-                _logger.LogError($"No movie Id provided when deleting");
+                _logger.LogError($"Movie with id '{id}' not found when deleting");
                 return NotFound();
             }
 
