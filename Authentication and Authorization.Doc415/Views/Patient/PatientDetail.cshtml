@@ -1,0 +1,135 @@
+﻿@using RadiologyPatientsExams.Models
+@model PatientDetailModel
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger mt-3" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<a class="btn btn-outline-warning mt-3 mb-3" asp-action="Index" asp-controller="Patient">Back to Patient List</a>
+
+<div class="container-fluid">
+    <div class="row">
+       <div class="col-lg-6">
+            <h2>Patient Details</h2>
+            <form class="pb-3" method="post" asp-action="UpdatePatient" asp-route-id="@Model.Patient.Id" asp-controller="Patient" asp-validation-summary="ModelOnly" id="updatePatientForm">
+                <div class="form-group pb-3">
+                    <label asp-for="Patient.BirthDate"></label>
+                    <input asp-for="Patient.BirthDate" value="@Model.Patient.BirthDate.ToString("yyyy-MM-dd")" type="date" class="form-control w-25" />
+                    <span asp-validation-for="Patient.BirthDate" class="text-danger"></span>
+                </div>
+                <div class="form-group pb-3">
+                    <label asp-for="Patient.Name"></label>
+                    <input asp-for="Patient.Name" class="form-control w-25" />
+                </div>
+                <div class="form-group pb-3">
+                    <label asp-for="Patient.Surname"></label>
+                    <input asp-for="Patient.Surname" class="form-control w-25" />
+
+                </div>
+                <div class="form-group pb-3">
+                    <label asp-for="Patient.Email"></label>
+                    <input asp-for="Patient.Email" class="form-control w-25" />
+                    <span asp-validation-for="Patient.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group pb-3">
+                    <label asp-for="Patient.Phone"></label>
+                    <input asp-for="Patient.Phone" class="form-control w-25" />
+                    <span asp-validation-for="Patient.Phone" class="text-danger"></span>
+                </div>
+
+                <input asp-for="Patient.Id" type="hidden" />
+                <input asp-for="Patient.NotDeleted" type="hidden" />
+
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete</button>
+
+            </form>
+
+
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this patient?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-danger" onclick="deletePatient(@Model.Patient.Id)">Confirm Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <div class="col-lg-6"> 
+            <h2>Patients Examinations</h2>
+            <div class="d-flex justify-content-between">
+            <button class="btn mt-3 mb-3 d-flex justify-content-center align-content-center addbutton" onclick=openaddexampage()>
+                Add Examination
+            </button>
+                <button class="btn bi bi-x-square" style="display:none" onclick=closeaddexampage() id="addexamclosebutton"></button>
+            </div>
+
+            <div class="container border rounded" id="addexamcontainer" style="display:none">
+                @Html.Partial("_addexam", new ExamViewModel() { RefPatientId = Model.Patient.Id, PatientName = Model.Patient.Name, PatientSurname = Model.Patient.Surname })
+            </div>
+
+
+            @if (Model.PatientsExamsList != null && Model.PatientsExamsList.Count > 0)
+            {
+                <table class="table table-light">
+                    <thead id="tableheads">
+                        <tr>
+                            <th><a asp-controller="Exam" asp-action="">Date</a></th>
+                            <th><a asp-controller="Exam" asp-action="">Patient Name</a></th>
+                            <th><a asp-controller="Exam" asp-action="">Patient Surname</a></th>
+                            <th><a asp-controller="Exam" asp-action="">Modality</a></th>
+                            <th><a asp-controller="Exam" asp-action="">Doctor</a></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exam in Model.PatientsExamsList)
+                        {
+                            <tr>
+                                <td>@exam.Date</td>
+                                <td>@exam.PatientName</td>
+                                <td>@exam.PatientSurname</td>
+                                <td>@exam.Modality</td>
+                                <td>@exam.Doctor</td>
+                                <td>
+                                    <a asp-controller="/Exam" asp-action="ExamDetail" asp-route-id="@exam.Id" class="viewButton btn btn-sm btn-outline-secondary btn-block">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="empty-list">No examinations available.</p>
+            }
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
