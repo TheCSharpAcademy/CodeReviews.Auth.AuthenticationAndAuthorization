@@ -1,0 +1,114 @@
+﻿@using RadiologyPatientsExams.Models
+@model ExamViewModel
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger mt-3" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@{
+    string toAction = "";
+    string toController = "";
+    int? toId = null;
+    if (ViewBag.RequestFrom == "Exam")
+    {
+        toAction = "Index";
+        toController = "Exam";
+    }
+    else
+    {
+        toAction = "PatientDetail";
+        toController = "Patient";
+        toId = @Model.RefPatientId;
+    }
+
+}
+<a class="btn btn-outline-warning mt-3 mb-3" asp-route-id="@toId" asp-action="@toAction" asp-controller="@toController">Back to Examinations List</a>
+
+<h2>Examination Details</h2>
+
+<form class="pb-3" method="post" asp-route-id="@Model.Id" asp-action="Update" asp-controller="Exam" id="updateExamForm">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group pb-3">
+        <label asp-for="Date"></label>
+        <input asp-for="Date" value="@DateTime.Parse(Model.Date).ToString("yyyy-MM-dd")" type="date" class="form-control w-25" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    <div class="form-group pb-3">
+        <label asp-for="PatientName"></label>
+        <input asp-for="PatientName" value="@Model.PatientName"   class="form-control w-25"  readonly />
+    </div>
+    <div class="form-group pb-3">
+        <label asp-for="PatientSurname"></label>
+        <input asp-for="PatientSurname" value="@Model.PatientSurname" id="StartPage" class="form-control w-25" readonly/>
+        
+    </div>
+    <div class="form-group pb-3">
+        <label asp-for="Modality"></label>
+        <input asp-for="Modality" id="EndPage" class="form-control w-25" />
+        <span asp-validation-for="Modality" class="text-danger"></span>
+    </div>
+
+    <div class="form-group pb-3">
+        <label asp-for="Doctor"></label>
+        <input asp-for="Doctor" id="TotalPages" class="form-control w-25" />
+        <span asp-validation-for="Doctor" class="text-danger"></span>
+    </div>
+    <div class="form-group pb-3">
+        <label asp-for="Diagnosis"></label>
+        <input asp-for="Diagnosis" class="form-control w-25" />
+        <span asp-validation-for="Diagnosis" class="text-danger"></span>
+    </div>
+    <div class="form-group pb-3">
+        <label asp-for="Comments"></label>
+        <input asp-for="Comments" class="form-control w-25" />
+    </div>
+    <input asp-for="Id" type="hidden" readonly />
+    <input asp-for="RefPatientId" type="hidden" readonly />
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete</button>
+</form>
+
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-danger" onclick=
+                @if (toController == "Exam")
+                {
+                        @Html.Raw("deleteExamFromExamView(" + @Model.Id + ")")
+                }
+                else
+                {
+                        @Html.Raw("deleteExam(" + @Model.Id + ","+Model.RefPatientId+")")
+                }
+         > Confirm Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
