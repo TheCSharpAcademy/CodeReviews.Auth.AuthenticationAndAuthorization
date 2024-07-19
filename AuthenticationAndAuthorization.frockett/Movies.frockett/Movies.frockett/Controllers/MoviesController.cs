@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Movies.frockett.Data;
 using Movies.frockett.Models;
+using Serilog;
 
 namespace Movies.frockett.Controllers
 {
@@ -26,7 +27,7 @@ namespace Movies.frockett.Controllers
         {
             if (_context.Movie == null)
             {
-                return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
+                return Problem("Entity set 'MvcMovieContext.Movie' is null.");
             }
 
             // Use LINQ to get list of genres.
@@ -60,6 +61,7 @@ namespace Movies.frockett.Controllers
         {
             if (id == null)
             {
+                Log.Error($"Invalid input received. ID can't be null.");
                 return NotFound();
             }
 
@@ -67,6 +69,7 @@ namespace Movies.frockett.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
+                Log.Error($"Movie with id {id} not found");
                 return NotFound();
             }
 
@@ -86,13 +89,24 @@ namespace Movies.frockett.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(movie);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(movie);
+                    await _context.SaveChangesAsync();
+                    Log.Information($"Movie {movie.Title} added to database.");
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(movie);
             }
-            return View(movie);
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error creating movie '{movie.Title}' data entry");
+
+                return View("Error");
+            }
+
         }
 
         // GET: Movies/Edit/5
@@ -100,12 +114,14 @@ namespace Movies.frockett.Controllers
         {
             if (id == null)
             {
+                Log.Error($"Invalid input received. ID can't be null.");
                 return NotFound();
             }
 
             var movie = await _context.Movie.FindAsync(id);
             if (movie == null)
             {
+                Log.Error($"Movie with id {id} not found");
                 return NotFound();
             }
             return View(movie);
@@ -120,6 +136,7 @@ namespace Movies.frockett.Controllers
         {
             if (id != movie.Id)
             {
+                Log.Error($"ID {id} and ID {movie.Id} do not match.");
                 return NotFound();
             }
 
@@ -128,16 +145,19 @@ namespace Movies.frockett.Controllers
                 try
                 {
                     _context.Update(movie);
+                    Log.Information($"Movie '{movie.Title}' updated");
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!MovieExists(movie.Id))
                     {
+                        Log.Error(ex, "Error occurred");
                         return NotFound();
                     }
                     else
                     {
+                        Log.Error(ex, "Error occurred");
                         throw;
                     }
                 }
@@ -151,6 +171,7 @@ namespace Movies.frockett.Controllers
         {
             if (id == null)
             {
+                Log.Error($"Invalid input received. ID can't be null.");
                 return NotFound();
             }
 
@@ -158,6 +179,7 @@ namespace Movies.frockett.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
+                Log.Error($"Movie with id {id} not found");
                 return NotFound();
             }
 
@@ -173,6 +195,7 @@ namespace Movies.frockett.Controllers
             if (movie != null)
             {
                 _context.Movie.Remove(movie);
+                Log.Information($"Movie {movie.Title} with ID {movie.Id} deleted.");
             }
 
             await _context.SaveChangesAsync();

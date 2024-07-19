@@ -3,14 +3,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Movies.frockett.Data;
 using Movies.frockett.Models;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("MoviesfrockettContext"),
+        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
+        restrictedToMinimumLevel: LogEventLevel.Information)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddDbContext<MoviesfrockettContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesfrockettContext") ?? throw new InvalidOperationException("Connection string 'MoviesfrockettContext' not found.")));
 
-//builder.Services.AddDbContext<IdentityDataContext>(options =>
-//   options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesfrockettContext")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<MoviesfrockettContext>();
@@ -50,6 +63,17 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-
-app.Run();
+try
+{
+    Log.Information("Starting host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 

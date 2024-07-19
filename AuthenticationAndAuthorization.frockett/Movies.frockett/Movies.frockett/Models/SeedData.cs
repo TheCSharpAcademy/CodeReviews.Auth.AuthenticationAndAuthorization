@@ -11,9 +11,6 @@ namespace Movies.frockett.Models
                 serviceProvider.GetRequiredService<
                     DbContextOptions<MoviesfrockettContext>>()))
             {
-
-                context.Database.EnsureCreated();
-                Console.WriteLine("I seeded!");
                 // Look for any movies.
                 if (context.Movie.Any())
                 {
