@@ -13,6 +13,7 @@ namespace Movies.frockett.Models
             {
 
                 context.Database.EnsureCreated();
+                Console.WriteLine("I seeded!");
                 // Look for any movies.
                 if (context.Movie.Any())
                 {
