@@ -43,4 +43,10 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+logger.LogInformation($"Hello world! Movies App is starting at {DateTimeOffset.Now.ToString("g")}");
+
 app.Run();
+
+logger.LogInformation($"Goodbye world! Movies App is stopping at {DateTimeOffset.Now.ToString("g")}");

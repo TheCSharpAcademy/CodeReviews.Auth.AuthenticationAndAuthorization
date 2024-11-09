@@ -9,10 +9,12 @@ namespace MVC_tutorial.Controllers
 {
     public class MoviesController : Controller
     {
+        private readonly ILogger<MoviesController> _logger;
         private readonly MovieContext _context;
 
-        public MoviesController(MovieContext context)
+        public MoviesController(ILogger<MoviesController> logger, MovieContext context)
         {
+            _logger = logger;
             _context = context;
         }
 
@@ -21,10 +23,9 @@ namespace MVC_tutorial.Controllers
         {
             if (_context.Movie == null)
             {
-                return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
+                return Problem("Entity set 'MvcMovieContext.Movie' is null.");
             }
 
-            // Use LINQ to get list of genres.
             IQueryable<string> genreQuery = from m in _context.Movie
                                             orderby m.Genre
                                             select m.Genre;
@@ -76,8 +77,6 @@ namespace MVC_tutorial.Controllers
         }
 
         // POST: Movies/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -110,8 +109,6 @@ namespace MVC_tutorial.Controllers
         }
 
         // POST: Movies/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -133,10 +130,13 @@ namespace MVC_tutorial.Controllers
                 {
                     if (!MovieExists(movie.Id))
                     {
+                        var message = $"Concurrency error! A movie that no longer exists was attempted to be deleted! Movie ID: {movie.Id}";
+                        await WriteAndSaveError(message);
                         return NotFound();
                     }
                     else
                     {
+                        await WriteAndSaveError($"Concurrency error! Movie ID: {movie.Id}");
                         throw;
                     }
                 }
@@ -183,6 +183,20 @@ namespace MVC_tutorial.Controllers
         private bool MovieExists(int id)
         {
             return _context.Movie.Any(e => e.Id == id);
+        }
+
+        private async Task WriteAndSaveError(string message)
+        {
+            _logger.LogError(message);
+
+            var newLog = new ErrorLog
+            {
+                Message = message,
+                Date = DateTime.Now
+            };
+
+            _context.ErrorLog.Add(newLog);
+            await _context.SaveChangesAsync();
         }
     }
 }
