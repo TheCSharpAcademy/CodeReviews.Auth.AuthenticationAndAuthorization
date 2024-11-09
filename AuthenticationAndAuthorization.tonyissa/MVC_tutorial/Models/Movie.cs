@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MVC_tutorial.Models;
 
@@ -19,8 +18,6 @@ public class Movie
     [Range(1, 100)]
     [DataType(DataType.Currency)]
     public decimal Price { get; set; }
-    [RegularExpression(@"^[A-Z]+[a-zA-Z0-9""'\s-]*$")]
-    [StringLength(5)]
     [Required]
     public string? Rating { get; set; }
 }

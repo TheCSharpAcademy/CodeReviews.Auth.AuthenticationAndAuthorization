@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MVC_tutorial.Models;
 
 namespace MVC_tutorial.Data
 {
-    public class MovieContext : DbContext
+    public class MovieContext : IdentityDbContext
     {
         public MovieContext (DbContextOptions<MovieContext> options)
             : base(options)

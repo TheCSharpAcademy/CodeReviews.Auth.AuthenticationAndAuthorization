@@ -1,10 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using MVC_tutorial.Data;
 using MVC_tutorial.Models;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MovieContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MovieContext") 
     ?? throw new InvalidOperationException("Connection string 'MovieContext' not found.")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<MovieContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -31,10 +35,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapRazorPages();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 app.Run();
