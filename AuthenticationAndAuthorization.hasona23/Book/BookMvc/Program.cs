@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BookMvc.Data;
 using BookMvc.Models;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BookContext>(options =>
@@ -11,6 +12,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    // Reads configuration settings for Serilog from the appsettings.json file or any other configuration source
+    // This enables setting options such as log levels, sinks, and output formats directly from configuration files.
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
