@@ -1,0 +1,96 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Book
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>BookMvc</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Author" class="control-label"></label>
+                <input asp-for="Author" class="form-control" />
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Year" class="control-label"></label>
+                <input asp-for="Year" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CoverImageUrl" class="control-label"></label>
+                <input asp-for="CoverImageUrl" class="form-control" />
+                <span asp-validation-for="CoverImageUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group m-2">
+                <label>Genre:</label>
+                <select name="Genre">
+                    @foreach (var genre in Enum.GetValues(typeof(Genre)).Cast<Genre>())
+                    {
+                        if (genre == Genre.None)
+                            continue;
+                        var genreDisplay = genre.GetType()
+                            .GetMember(genre.ToString())
+                            .FirstOrDefault()?
+                            .GetCustomAttribute<DisplayAttribute>()?.Name ?? genre.ToString();
+
+                        <option value="@genre">@genreDisplay</option>
+                    }
+                </select>
+                <label>Reading Status:</label>
+                <select name="ReadingStatus">
+                    
+                    @foreach (var status in Enum.GetValues(typeof(ReadingStatus)).Cast<ReadingStatus>())
+                    {
+                        if (status == ReadingStatus.None)
+
+                            continue;
+                        var statusDisplay = status.GetType()
+                            .GetMember(status.ToString())
+                            .FirstOrDefault()?
+                            .GetCustomAttribute<DisplayAttribute>()?.Name ?? status.ToString();
+
+                        <option value="@status">@statusDisplay</option>
+                    }
+
+                </select>
+            </div>
+            <div class="form-group d-inline">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+
+                <label asp-for="Rating" class="control-label"></label>
+                <input asp-for="Rating" class="form-control" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group m-2">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

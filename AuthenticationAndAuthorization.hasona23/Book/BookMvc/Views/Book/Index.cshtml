@@ -1,0 +1,101 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<Book>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Books</h1>
+
+<head>
+    <link rel="stylesheet" href="css/filter.css">
+</head>
+<p class="text-lg-end">
+    <a class="btn btn-success" asp-action="Create">Create New</a>
+</p>
+<p>
+    <button class="btn btn-primary" type="button"
+            data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false"
+            aria-controls="filterCollapse">
+        Filter
+    </button>
+</p>
+<div class="collapse row row-cols-2 row-cols-md-2" id="filterCollapse">
+    <div class="card card-body">
+        <form method="get"  asp-controller="Book" asp-action="Index">
+            <label>Title:</label>
+            <input type="text" name="Title"/>
+
+            <label>Author:</label>
+            <input type="text" name="Author"/>
+
+            <label>Year:</label>
+            <input type="number" name="Year"/>
+
+            <label>Genre:</label>
+            <select name="Genre">
+                <!-- Dropdown for genres -->
+                <option value="None">All Genres</option> <!-- "None" for no genre filter -->
+
+                @foreach (var genre in Enum.GetValues(typeof(Genre)).Cast<Genre>())
+                {
+                    if (genre == Genre.None)
+                        continue;
+                    var genreDisplay = genre.GetType()
+                        .GetMember(genre.ToString())
+                        .FirstOrDefault()?
+                        .GetCustomAttribute<DisplayAttribute>()?.Name ?? genre.ToString();
+
+                    <option value="@genre">@genreDisplay</option>
+                }
+            </select>
+            <label>Reading Status:</label>
+            <select name="ReadingStatus">
+                <option value="None">Any</option>
+
+                @foreach (var status in Enum.GetValues(typeof(ReadingStatus)).Cast<ReadingStatus>())
+                {
+                    if (status == ReadingStatus.None)
+
+                        continue;
+                    var statusDisplay = status.GetType()
+                        .GetMember(status.ToString())
+                        .FirstOrDefault()?
+                        .GetCustomAttribute<DisplayAttribute>()?.Name ?? status.ToString();
+
+                    <option value="@status">@statusDisplay</option>
+                }
+                
+            </select>
+
+            <label>Rating:</label>
+            <input type="range" min="1" max="5" name="Rating"/>
+            <label>Price:</label>
+            <input type="number" min="0" max="1000" name="Price"/>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</div>
+<div class="card-group" id="Books">
+    @foreach (var book in Model)
+    {
+        <div class="card" style="max-width: 24%; min-width: 24%; padding: 5px;">
+            <img src="@book.CoverImageUrl" class="card-img-top" style="object-fit: contain" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@book.Title</h5>
+                <p class="card-text">@book.Author - @book.Year</p>
+                <p class="card-text">@book.Genre - @book.ReadingStatus</p>
+                <p class="card-text">$@book.Price  -  @book.Rating/5</p>
+            </div>
+            <div class="card-footer text-center">
+                <a class="btn btn-success align-self-start" asp-action="Details" asp-route-id="@book.Id">Details</a>
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@book.Id">Edit</a>
+                <a class="btn btn-danger align-self-end" asp-action="Delete" asp-route-id="@book.Id">Delete</a>
+            </div>
+        </div>
+    }
+</div>
+
+
+    
