@@ -1,0 +1,38 @@
+html {
+  font-size: calc(60% + 0.8vmin);
+  position: relative;
+  min-height: 100%;
+}
+
+* {
+  font-size: 1rem;
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+h3 {
+  font-size: 1.3rem;
+}
+
+.header-logo {
+  height: 3rem;
+}
+
+.header-title {
+  font-size: 1.5rem;
+}
+
+.footer-text {
+  font-size: 0.8rem;
+}
+
+.btn:focus, a:focus, .navbar-toggler:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}

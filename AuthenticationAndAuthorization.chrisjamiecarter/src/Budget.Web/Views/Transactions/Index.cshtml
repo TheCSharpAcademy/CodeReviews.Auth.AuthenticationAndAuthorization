@@ -1,0 +1,110 @@
+﻿@model TransactionsViewModel
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<h1>Transactions</h1>
+<hr />
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Create", "Transactions")">
+    Add Transaction
+</button>
+
+<form class="my-3" asp-controller="Transactions" asp-action="Index" method="get">
+    <div class="row">
+        <div class="col">
+            <label class="col-form-label" asp-for="FilterCategory" class="control-label"></label>
+            <select class="form-select" asp-for="FilterCategory" asp-items="Model.Categories">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col">
+            <label class="col-form-label" asp-for="SearchName"></label>
+            <input class="form-control" placeholder="Name" asp-for="SearchName" />
+        </div>
+        <div class="col">
+            <label class="col-form-label" asp-for="SearchStart"></label>
+            <input class="form-control" placeholder="Start" asp-for="SearchStart" />
+        </div>
+        <div class="col">
+            <label class="col-form-label" asp-for="SearchEnd"></label>
+            <input class="form-control" type="date" asp-for="SearchEnd" />
+        </div>
+        <div class="col-auto align-content-end">
+            <input type="submit" class="btn btn-primary" value="Filter" />
+            <a type="button" class="btn btn-secondary" asp-action="Index">Clear</a>
+        </div>
+    </div>
+</form>
+
+<table class="table table-hover mb-5">
+    <thead>
+        <tr>
+            <th class="col-2">
+                @Html.DisplayNameFor(model => model.Transactions.FirstOrDefault()!.Date)
+                @await Html.PartialAsync("SVGs/_CaretUp")
+            </th>
+            <th class="col-2">
+                @Html.DisplayNameFor(model => model.Transactions.FirstOrDefault()!.Category)
+            </th>
+            <th class="col-auto">
+                @Html.DisplayNameFor(model => model.Transactions.FirstOrDefault()!.Name)
+            </th>
+            <th class="col-2">
+                @Html.DisplayNameFor(model => model.Transactions.FirstOrDefault()!.Amount)
+            </th>
+            <th class="col-lg-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Transactions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td class="d-flex justify-content-end">
+                    <button class="btn btn-warning me-1" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Edit", "Transactions", new { id = item.Id })">
+                        @await Html.PartialAsync("SVGs/_Pencil")
+                    </button>
+                    <button class="btn btn-danger me-1" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Delete", "Transactions", new { id = item.Id })">
+                        @await Html.PartialAsync("SVGs/_Trash")
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="dynamicModal" tabindex="-1" role="dialog" aria-labelledby="dynamicModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dynamicModalLabel">Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Content loaded dynamically via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

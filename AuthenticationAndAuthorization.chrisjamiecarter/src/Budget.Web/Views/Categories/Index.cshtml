@@ -1,0 +1,68 @@
+﻿@model IEnumerable<CategoryViewModel>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>Categories</h1>
+<hr />
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Create", "Categories")">
+    Add Category
+</button>
+
+<button class="btn btn-secondary mb-3" type="button" onclick="location.href='@Url.Action("CreateDefault", "Categories")'">
+    Add Default Categories
+</button>
+
+<table class="table table-hover mb-5">
+    <thead>
+        <tr>
+            <th class="col-auto">
+                @Html.DisplayNameFor(model => model.Name)
+                @await Html.PartialAsync("SVGs/_CaretUp")
+            </th>
+            <th class="col-lg-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td class="d-flex justify-content-end">
+                    <button class="btn btn-warning me-1" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Edit", "Categories", new { id = item.Id })">
+                        @await Html.PartialAsync("SVGs/_Pencil")
+                    </button>
+                    <button class="btn btn-danger me-1" data-bs-toggle="modal" data-bs-target="#dynamicModal" data-url="@Url.Action("Delete", "Categories", new { id = item.Id })">
+                        @await Html.PartialAsync("SVGs/_Trash")
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="dynamicModal" tabindex="-1" role="dialog" aria-labelledby="dynamicModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dynamicModalLabel">Categories</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Content loaded dynamically via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
